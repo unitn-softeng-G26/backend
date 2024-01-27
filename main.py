@@ -2,6 +2,7 @@ import random
 from datetime import datetime
 from pony.orm import db_session
 from fastapi import FastAPI, Cookie, Query, HTTPException
+from fastapi.responses import JSONResponse
 from modules.database import Utente, Studente, Docente, Segreteria, Corso, Appello
 from modules.schemas import (StructCredentials, StructLibretto, NuovoAppello, ModAppello,
                              ListaCorsi, ListaAppelli, ListaUtenti)
@@ -40,7 +41,9 @@ def login(credentials: StructCredentials):
         rand = random.getrandbits(128)
         utente.token = hex(rand)[2:]
 
-    return {"token": utente.token}
+    response = JSONResponse(content={"result": "ok"})
+    response.set_cookie(key="token", value=utente.token)
+    return response
 
 
 @app.post("/logout")

@@ -9,6 +9,8 @@ res = requests.post(f"{base_url}/login", json={
     "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
 })
 print(res.status_code, res.json())
+print(res.headers)
+print(res.cookies)
 
 token = res.json()['token']
 
@@ -18,6 +20,7 @@ token = res.json()['token']
 
 print("--- CORSI ---")
 res = requests.get(f"{base_url}/corsi?docente=4", cookies={"token": token})
+print(res.headers)
 print(res.status_code, res.json())
 
 
