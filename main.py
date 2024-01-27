@@ -3,7 +3,7 @@ from datetime import datetime
 from pony.orm import db_session
 from fastapi import FastAPI, Cookie, Query, HTTPException
 from modules.database import Utente, Studente, Docente, Segreteria, Corso, Appello
-from modules.schemas import (StructCredentials, StructLibretto, StructAppello,
+from modules.schemas import (StructCredentials, StructLibretto, NuovoAppello, ModAppello,
                              ListaCorsi, ListaAppelli, ListaUtenti)
 
 SERVER_ADDR = "127.0.0.1"
@@ -139,12 +139,12 @@ def post_libretto(libretto: StructLibretto, token: str=Cookie(None)):
 
 @app.get("/appelli")
 @db_session
-def appelli(token: str=Cookie(None), id: int=Query(None)):
+def appelli(token: str=Cookie(None), corso: int=Query(None)):
     _ = get_user(token)
-    if not id:
+    if not corso:
         raise HTTPException(status_code=400, detail="ID corso mancante.")
 
-    lista_appelli = Appello.select(lambda a: a.corso.id == id)
+    lista_appelli = Appello.select(lambda a: a.corso.id == corso)
     if not lista_appelli:
         raise HTTPException(status_code=404, detail="Nessun appello trovato.")
 
@@ -153,15 +153,15 @@ def appelli(token: str=Cookie(None), id: int=Query(None)):
 
 @app.post("/appelli/iscrizione")
 @db_session
-def iscrizione_appello(token: str=Cookie(None), id: int=Query(None)):
+def iscrizione_appello(token: str=Cookie(None), appello: int=Query(None)):
     utente = get_user(token)
     if not isinstance(utente, Studente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
 
-    if not id:
+    if not appello:
         raise HTTPException(status_code=400, detail="ID appello mancante.")
 
-    appello = Appello.get(id=id)
+    appello = Appello.get(id=appello)
     if appello is None:
         raise HTTPException(status_code=404, detail="Appello non trovato.")
 
@@ -180,15 +180,15 @@ def iscrizione_appello(token: str=Cookie(None), id: int=Query(None)):
 
 @app.delete("/appelli/iscrizione")
 @db_session
-def disiscrizione_appello(token: str=Cookie(None), id: int=Query(None)):
+def disiscrizione_appello(token: str=Cookie(None), appello: int=Query(None)):
     utente = get_user(token)
     if not isinstance(utente, Studente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
 
-    if not id:
+    if not appello:
         raise HTTPException(status_code=400, detail="ID appello mancante.")
 
-    appello = Appello.get(id=id)
+    appello = Appello.get(id=appello)
     if appello is None:
         raise HTTPException(status_code=404, detail="Appello non trovato.")
 
@@ -204,7 +204,7 @@ def disiscrizione_appello(token: str=Cookie(None), id: int=Query(None)):
 
 @app.post("/appelli/inserisci")
 @db_session
-def inserimento_appello(appello: StructAppello, token: str=Cookie(None)):
+def inserimento_appello(appello: NuovoAppello, token: str=Cookie(None)):
     utente = get_user(token)
     if not isinstance(utente, Docente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
@@ -227,7 +227,7 @@ def inserimento_appello(appello: StructAppello, token: str=Cookie(None)):
 
 @app.patch("/appelli/modifica")
 @db_session
-def modifica_appello(appello: StructAppello, token: str=Cookie(None)):
+def modifica_appello(appello: ModAppello, token: str=Cookie(None)):
     utente = get_user(token)
     if not isinstance(utente, Docente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")

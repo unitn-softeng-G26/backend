@@ -11,12 +11,20 @@ class StructLibretto(BaseModel):
     corsi: list[int]
 
 
-class StructAppello(BaseModel):
+class NuovoAppello(BaseModel):
+    corso: int
     data: str
     data_inizio_iscrizione: str
     data_fine_iscrizione: str
     aula: str
-    corso: int
+
+
+class ModAppello(BaseModel):
+    id: int
+    data: str
+    data_inizio_iscrizione: str
+    data_fine_iscrizione: str
+    aula: str
 
 
 @db_session
