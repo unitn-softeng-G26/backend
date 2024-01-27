@@ -61,7 +61,7 @@ def ListaUtenti(utenti) -> dict:
             "nome": utente.nome,
             "cognome": utente.cognome,
             "displayName": utente.displayName,
-            "email": utente.username,
+            "email": utente.email,
             "ruolo": utente.ruolo
         } for utente in utenti]
     }

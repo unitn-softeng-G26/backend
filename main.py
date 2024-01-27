@@ -41,7 +41,7 @@ def login(credentials: StructCredentials):
         rand = random.getrandbits(128)
         utente.token = hex(rand)[2:]
 
-    response = JSONResponse(content={"result": "ok"})
+    response = JSONResponse(content={"token": utente.token})
     response.set_cookie(key="token", value=utente.token)
     return response
 
@@ -87,7 +87,7 @@ def info_utente(token: str=Cookie(None)):
         "nome": utente.nome,
         "cognome": utente.cognome,
         "displayName": utente.displayName,
-        "email": utente.username,
+        "email": utente.email,
         "ruolo": utente.ruolo
     }
 
