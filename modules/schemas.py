@@ -11,7 +11,7 @@ class Libretto(BaseModel):
     corsi: list[int]
 
 
-class Appello(BaseModel):
+class StructAppello(BaseModel):
     data: str
     data_inizio_iscrizione: str
     data_fine_iscrizione: str

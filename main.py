@@ -2,8 +2,8 @@ import random
 from datetime import datetime
 from pony.orm import db_session
 from fastapi import FastAPI, Cookie, Query, HTTPException
-from modules.schemas import Credentials, Libretto, ListaCorsi, ListaAppelli, ListaUtenti
 from modules.database import Utente, Studente, Docente, Segreteria, Corso, Appello
+from modules.schemas import Credentials, Libretto, ListaCorsi, ListaAppelli, ListaUtenti, StructAppello
 
 SERVER_ADDR = "127.0.0.1"
 SERVER_PORT = 4480
@@ -203,7 +203,7 @@ def disiscrizione_appello(token: str=Cookie(None), id: int=Query(None)):
 
 @app.post("/appelli/inserisci")
 @db_session
-def inserimento_appello(token: str=Cookie(None), appello: Appello=Query(None)):
+def inserimento_appello(appello: StructAppello, token: str=Cookie(None)):
     utente = get_user(token)
     if not isinstance(utente, Docente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
@@ -226,7 +226,7 @@ def inserimento_appello(token: str=Cookie(None), appello: Appello=Query(None)):
 
 @app.patch("/appelli/modifica")
 @db_session
-def modifica_appello(token: str=Cookie(None), appello: Appello=Query(None)):
+def modifica_appello(appello: StructAppello, token: str=Cookie(None)):
     utente = get_user(token)
     if not isinstance(utente, Docente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
