@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Ci4 API
   description: Documentazione API Ci4
-  version: 1.0.2
+  version: 1.0.3
 
 servers:
   - url: https://ci4.pesaventofilippo.com/api/v1
@@ -382,27 +382,36 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Corso'
+            type: object
+            properties:
+              corsi:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Corso'
 
     ListaUtenti:
       description: Un array JSON di utenti
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Utente'
+            type: object
+            properties:
+              utenti:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Utente'
 
     ListaAppelli:
       description: Un array JSON di appelli
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Appello'
+            type: object
+            properties:
+              appelli:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appello'
 
     SingoloUtente:
       description: Un utente
