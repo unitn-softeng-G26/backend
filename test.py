@@ -1,6 +1,6 @@
 import requests
 
-base_url = 'http://localhost:4480'
+base_url = 'https://ci4.pesaventofilippo.com/api/v1'
 
 
 print("--- LOGIN ---")

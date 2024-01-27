@@ -3,10 +3,11 @@ from datetime import datetime
 from pony.orm import db_session
 from fastapi import FastAPI, Cookie, Query, HTTPException
 from modules.database import Utente, Studente, Docente, Segreteria, Corso, Appello
-from modules.schemas import Credentials, Libretto, ListaCorsi, ListaAppelli, ListaUtenti, StructAppello
+from modules.schemas import (StructCredentials, StructLibretto, StructAppello,
+                             ListaCorsi, ListaAppelli, ListaUtenti)
 
 SERVER_ADDR = "127.0.0.1"
-SERVER_PORT = 4480
+SERVER_PORT = 4481
 
 app = FastAPI()
 
@@ -30,7 +31,7 @@ def root():
 
 @app.post("/login")
 @db_session
-def login(credentials: Credentials):
+def login(credentials: StructCredentials):
     utente = Utente.get(email=credentials.username, password=credentials.password)
     if utente is None:
         raise HTTPException(status_code=401, detail="Credenziali non valide.")
@@ -53,25 +54,25 @@ def logout(token: str=Cookie(None)):
 @app.get("/corsi")
 @db_session
 def corsi(token: str=Cookie(None), docente: int=Query(None)):
-    utente = get_user(token)
+    _ = get_user(token)
 
-    corsi = Corso.select() if docente is None else Corso.select(lambda c: c.docente.id == docente)
-    if not corsi:
+    lista_corsi = Corso.select() if docente is None else Corso.select(lambda c: c.docente.id == docente)
+    if not lista_corsi:
         raise HTTPException(status_code=404, detail="Nessun corso trovato.")
 
-    return ListaCorsi(corsi)
+    return ListaCorsi(lista_corsi)
 
 
 @app.get("/docenti")
 @db_session
-def lista_docenti(token: str=Cookie(None)):
-    utente = get_user(token)
+def docenti(token: str=Cookie(None)):
+    _ = get_user(token)
 
-    docenti = Docente.select()
-    if not docenti:
+    lista_docenti = Docente.select()
+    if not lista_docenti:
         raise HTTPException(status_code=404, detail="Nessun docente trovato.")
 
-    return ListaUtenti(docenti)
+    return ListaUtenti(lista_docenti)
 
 
 @app.get("/utente")
@@ -115,7 +116,7 @@ def get_libretto(token: str=Cookie(None), matricola: int=Query(None)):
 
 @app.post("/libretto")
 @db_session
-def post_libretto(libretto: Libretto, token: str=Cookie(None)):
+def post_libretto(libretto: StructLibretto, token: str=Cookie(None)):
     utente = get_user(token)
     if not isinstance(utente, Studente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
@@ -139,15 +140,15 @@ def post_libretto(libretto: Libretto, token: str=Cookie(None)):
 @app.get("/appelli")
 @db_session
 def appelli(token: str=Cookie(None), id: int=Query(None)):
-    utente = get_user(token)
+    _ = get_user(token)
     if not id:
         raise HTTPException(status_code=400, detail="ID corso mancante.")
 
-    appelli = Appello.select(lambda a: a.corso.id == id)
-    if not appelli:
+    lista_appelli = Appello.select(lambda a: a.corso.id == id)
+    if not lista_appelli:
         raise HTTPException(status_code=404, detail="Nessun appello trovato.")
 
-    return ListaAppelli(appelli)
+    return ListaAppelli(lista_appelli)
 
 
 @app.post("/appelli/iscrizione")

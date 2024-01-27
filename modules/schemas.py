@@ -2,12 +2,12 @@ from pydantic import BaseModel
 from pony.orm import db_session
 
 
-class Credentials(BaseModel):
+class StructCredentials(BaseModel):
     username: str
     password: str
 
 
-class Libretto(BaseModel):
+class StructLibretto(BaseModel):
     corsi: list[int]
 
 
