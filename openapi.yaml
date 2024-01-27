@@ -1,0 +1,400 @@
+openapi: 3.0.0
+info:
+  title: Ci4 API
+  description: Documentazione API Ci4
+  version: 1.0.0
+
+servers:
+  - url: https://ci4.pesaventofilippo.com/api/v1
+    description: Production
+
+
+paths:
+  /login:
+    post:
+      summary: Effettua il login
+      description: Richiedi un token sessione per l'utente, tramite le credenziali.
+      parameters:
+        - in: header
+          name: username
+          schema:
+            type: string
+            example: "nome.cognome@unitn.it"
+          required: true
+          description: Username (email) dell'utente
+        - in: header
+          name: password
+          schema:
+            type: string
+            example: "65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5"
+          required: true
+          description: Password dell'utente, codificata tramite sha256.
+
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token di sessione valido
+                    example: "abcdef12345uvxyz6789"
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /logout:
+    post:
+      summary: Effettua il logout
+      description: Invalida il token di sessione attivo.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+      responses:
+        '200':
+          description: Logout effettuato con successo
+
+  /corsi:
+    get:
+      summary: Lista dei corsi
+      description: Ritorna la lista di tutti i corsi presenti nel database.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: docente
+          schema:
+            type: integer
+          required: false
+          description: (Opzionale) ID del docente di cui richiedere i corsi
+      responses:
+        '200':
+          $ref: '#/components/responses/ListaCorsi'
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /libretto:
+    get:
+      summary: Libretto dello studente
+      description: Ritorna il libretto dello studente.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: matricola
+          schema:
+            type: integer
+          required: false
+          description: (Opzionale) Matricola dello studente di cui richiedere il libretto
+      responses:
+        '200':
+          $ref: '#/components/responses/ListaCorsi'
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+    post:
+      summary: Compilazione del libretto
+      description: Specifica i corsi che comporranno il nuovo libretto dello studente.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: corsi
+          schema:
+            type: array
+            items:
+              type: integer
+          required: true
+          description: Array di ID dei corsi da aggiungere al libretto
+      responses:
+        '200':
+          description: Libretto aggiornato con successo
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /appelli:
+    get:
+      summary: Lista degli appelli di un corso
+      description: Ritorna la lista degli appelli di un corso specificato.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID del corso di cui richiedere gli appelli
+      responses:
+        '200':
+          $ref: '#/components/responses/ListaAppelli'
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /appelli/iscrizione:
+    post:
+      summary: Iscrizione ad un appello
+      description: Iscrive lo studente ad un appello.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID dell'appello a cui iscriversi
+      responses:
+        '200':
+          description: Iscrizione effettuata con successo
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+    delete:
+      summary: Disiscrizione ad un appello
+      description: Disiscrive lo studente da un appello.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID dell'appello da cui disiscriversi
+      responses:
+        '200':
+          description: Disiscrizione effettuata con successo
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /appelli/inserisci:
+    post:
+      summary: Inserimento di un nuovo appello
+      description: Inserisce un nuovo appello nel database.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: corso
+          schema:
+            type: integer
+          required: true
+          description: ID del corso a cui aggiungere l'appello
+        - in: query
+          name: data
+          schema:
+            type: string
+          required: true
+          description: Data dell'appello
+        - in: query
+          name: data_inizio_iscrizione
+          schema:
+            type: string
+          required: true
+          description: Data di inizio iscrizione
+        - in: query
+          name: data_fine_iscrizione
+          schema:
+            type: string
+          required: true
+          description: Data di fine iscrizione
+        - in: query
+          name: aula
+          schema:
+            type: string
+          required: true
+          description: Aula dell'appello
+      responses:
+        '200':
+          description: Appello inserito con successo
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /appelli/modifica:
+    patch:
+      summary: Modifica un appello
+      description: Modifica un appello esistente nel database.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID dell'appello da modificare
+        - in: query
+          name: data
+          schema:
+            type: string
+          required: false
+          description: Data dell'appello
+        - in: query
+          name: data_inizio_iscrizione
+          schema:
+            type: string
+          required: false
+          description: Data di inizio iscrizione
+        - in: query
+          name: data_fine_iscrizione
+          schema:
+            type: string
+          required: false
+          description: Data di fine iscrizione
+        - in: query
+          name: aula
+          schema:
+            type: string
+          required: false
+          description: Aula dell'appello
+      responses:
+        '200':
+          description: Appello modificato con successo
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /docenti:
+    get:
+      summary: Lista dei docenti
+      description: Ritorna la lista di tutti i docenti presenti nel database.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+      responses:
+        '200':
+          $ref: '#/components/responses/ListaUtenti'
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+  /utente:
+    get:
+      summary: Informazioni utente
+      description: Ritorna le informazioni dell'utente attuale.
+      parameters:
+        - $ref: '#/components/parameters/SessionToken'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingoloUtente'
+        '401':
+          $ref: '#/components/responses/ErrorString'
+
+
+components:
+  schemas:
+    Corso:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID univoco del corso.
+          example: 1
+        nome:
+          type: string
+          description: Il nome del corso.
+          example: "Programmazione 1"
+        crediti:
+          type: integer
+          description: Il numero di crediti del corso.
+          example: 6
+
+    Utente:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID univoco dell'utente.
+          example: 1
+        email:
+          type: string
+          description: L'indirizzo mail dell'utente.
+          example: "nome.cognome@example.com"
+        nome:
+          type: string
+          description: Il nome dell'utente.
+          example: "Nome"
+        cognome:
+          type: string
+          description: Il cognome dell'utente.
+          example: "Cognome"
+        displayName:
+          type: string
+          description: Il nome formattato dell'utente.
+          example: "Prof. Cognome"
+        ruolo:
+          type: integer
+          description: Il ruolo dell'utente (1=studente, 2=docente, 3=segreteria).
+          example: 2
+
+    Appello:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID univoco dell'appello.
+          example: 1
+        data:
+          type: string
+          description: La data nella quale si tiene l'appello.
+          example: "2023-07-12"
+        data_inizio_iscrizione:
+          type: string
+          description: La data a partire dalla quale è possibile iscriversi all'appello.
+          example: "2023-06-10"
+        data_fine_iscrizione:
+          type: string
+          description: La data di chiusura delle iscrizioni all'appello.
+          example: "2023-06-30"
+        aula:
+          type: string
+          description: L'aula dove si tiene l'appello.
+          example: "Aula A101"
+
+  parameters:
+    SessionToken:
+      in: cookie
+      name: token
+      schema:
+        type: string
+        example: "abcdef12345uvxyz6789"
+      required: true
+      description: Active session token
+
+  responses:
+    ErrorString:
+      description: Messaggio di errore
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Motivo dell'errore
+                example: "Invalid session token"
+
+    ListaCorsi:
+      description: Un array JSON di corsi
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Corso'
+
+    ListaUtenti:
+      description: Un array JSON di utenti
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Utente'
+
+    ListaAppelli:
+      description: Un array JSON di appelli
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Appello'
+
+    SingoloUtente:
+      description: Un utente
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Utente'
