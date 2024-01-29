@@ -1,14 +1,15 @@
 import requests
 
-base_url = 'https://ci4.pesaventofilippo.com/api/v1'
+base_url = 'http://localhost:4481'
+# base_url = 'https://ci4.pesaventofilippo.com/api/v1'
 
 
 print("--- LOGIN ---")
 res = requests.post(f"{base_url}/login", json={
-    "username": "filippo.pesavento@studenti.unitn.it",
-    "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+    "username": "",
+    "password": ""
 })
-print(res.status_code, res.json())
+print(res.status_code, res.content)
 print(res.headers)
 print(res.cookies)
 

@@ -33,6 +33,9 @@ def root():
 @app.post("/login")
 @db_session
 def login(credentials: StructCredentials):
+    if not credentials.username or not credentials.password:
+        raise HTTPException(status_code=401, detail="Credenziali mancanti.")
+
     utente = Utente.get(email=credentials.username, password=credentials.password)
     if utente is None:
         raise HTTPException(status_code=401, detail="Credenziali non valide.")
