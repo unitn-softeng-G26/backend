@@ -143,3 +143,21 @@ if __name__ == "__main__":
             Corso(nome="Network Security", crediti=30, docente=d4)
 
             print("Fatto.")
+
+        # Crea appelli se non esistono
+        if not Appello.exists():
+            print("[DB] Creo appelli di esempio: ", end="")
+            Appello(data=datetime(2024, 1, 1, 9, 0), data_inizio_iscrizione=datetime(2023, 12, 15, 0, 0),
+                    data_fine_iscrizione=datetime(2024, 12, 31, 23, 59), aula="A101", corso=Corso[1])
+            Appello(data=datetime(2024, 1, 1, 9, 0), data_inizio_iscrizione=datetime(2023, 12, 15, 0, 0),
+                    data_fine_iscrizione=datetime(2024, 12, 31, 23, 59), aula="A102", corso=Corso[2])
+            Appello(data=datetime(2024, 1, 1, 9, 0), data_inizio_iscrizione=datetime(2023, 12, 15, 0, 0),
+                    data_fine_iscrizione=datetime(2024, 12, 31, 23, 59), aula="A103", corso=Corso[3])
+            Appello(data=datetime(2024, 1, 1, 9, 0), data_inizio_iscrizione=datetime(2023, 12, 15, 0, 0),
+                    data_fine_iscrizione=datetime(2024, 12, 31, 23, 59), aula="A104", corso=Corso[4])
+            Appello(data=datetime(2024, 1, 1, 9, 0), data_inizio_iscrizione=datetime(2023, 12, 15, 0, 0),
+                    data_fine_iscrizione=datetime(2024, 12, 31, 23, 59), aula="A105", corso=Corso[5])
+            Appello(data=datetime(2024, 1, 1, 9, 0), data_inizio_iscrizione=datetime(2023, 12, 15, 0, 0),
+                    data_fine_iscrizione=datetime(2024, 12, 31, 23, 59), aula="A106", corso=Corso[6])
+
+            print("Fatto.")
