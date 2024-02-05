@@ -11,6 +11,10 @@ class StructLibretto(BaseModel):
     corsi: list[int]
 
 
+class IdAppello(BaseModel):
+    id: int
+
+
 class NuovoAppello(BaseModel):
     corso: int
     data: str

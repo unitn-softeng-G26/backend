@@ -4,7 +4,7 @@ from pony.orm import db_session
 from fastapi import FastAPI, Cookie, Query, HTTPException
 from fastapi.responses import JSONResponse
 from modules.database import Utente, Studente, Docente, Segreteria, Corso, Appello
-from modules.schemas import (StructCredentials, StructLibretto, NuovoAppello, ModAppello,
+from modules.schemas import (StructCredentials, StructLibretto, NuovoAppello, ModAppello, IdAppello,
                              ListaCorsi, ListaAppelli, ListaUtenti)
 
 SERVER_ADDR = "127.0.0.1"
@@ -162,8 +162,9 @@ def appelli(token: str=Cookie(None), corso: int=Query(None)):
 
 @app.post("/appelli/iscrizione")
 @db_session
-def iscrizione_appello(token: str=Cookie(None), appello: int=Query(None)):
+def iscrizione_appello(appello: IdAppello, token: str=Cookie(None)):
     utente = get_user(token)
+    appello = appello.id
     if not isinstance(utente, Studente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
 
@@ -189,8 +190,9 @@ def iscrizione_appello(token: str=Cookie(None), appello: int=Query(None)):
 
 @app.delete("/appelli/iscrizione")
 @db_session
-def disiscrizione_appello(token: str=Cookie(None), appello: int=Query(None)):
+def disiscrizione_appello(appello: IdAppello, token: str=Cookie(None)):
     utente = get_user(token)
+    appello = appello.id
     if not isinstance(utente, Studente):
         raise HTTPException(status_code=401, detail="Utente non autorizzato.")
 
