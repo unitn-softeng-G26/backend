@@ -1,4 +1,5 @@
 import random
+from hashlib import sha256
 from datetime import datetime
 from pony.orm import db_session
 from fastapi import FastAPI, Cookie, Query, HTTPException
@@ -39,7 +40,7 @@ def login(credentials: StructCredentials):
     if not credentials.username or not credentials.password:
         raise HTTPException(status_code=401, detail="Credenziali mancanti.")
 
-    utente = Utente.get(email=credentials.username, password=credentials.password)
+    utente = Utente.get(email=credentials.username, password=sha256(credentials.password.encode()).hexdigest())
     if utente is None:
         raise HTTPException(status_code=401, detail="Credenziali non valide.")
 
